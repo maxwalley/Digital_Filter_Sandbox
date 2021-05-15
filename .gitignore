@@ -30,3 +30,6 @@
 *.exe
 *.out
 *.app
+
+Digital_Filter_Sandbox/Builds
+Digital_Filter_Sandbox/JuceLibraryCode
