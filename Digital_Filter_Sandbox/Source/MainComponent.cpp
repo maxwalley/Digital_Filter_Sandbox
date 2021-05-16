@@ -47,7 +47,18 @@ void MainComponent::prepareToPlay (int samplesPerBlockExpected, double sampleRat
 
 void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferToFill)
 {
-    bufferToFill.clearActiveBufferRegion();
+    if(playing)
+    {
+        assert(fileReader);
+        
+        fileReader->read(bufferToFill.buffer, 0, bufferToFill.numSamples, sampleNumber, false, false);
+        
+        sampleNumber += bufferToFill.numSamples;
+    }
+    else
+    {
+        bufferToFill.clearActiveBufferRegion();
+    }
 }
 
 void MainComponent::releaseResources()
@@ -83,14 +94,14 @@ void MainComponent::buttonClicked(juce::Button* button)
     {
         if(!playing && isFileLoaded())
         {
-            //play file
+            playing = true;
         }
     }
     else if(button == &stopButton)
     {
         if(playing)
         {
-            //stop file
+            playing = false;
         }
     }
 }
@@ -110,9 +121,10 @@ void MainComponent::filesDropped(const juce::StringArray& files, int x, int y)
     {
         std::unique_ptr<juce::AudioFormatReader> potentialReader(fmtMan.createReaderFor(newFile));
         
-        if(potentialReader)
+        if(potentialReader && potentialReader->numChannels < 3)
         {
             fileReader.reset(potentialReader.release());
+            sampleNumber = 0;
             return;
         }
     }

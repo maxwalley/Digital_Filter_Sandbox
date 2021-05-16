@@ -38,6 +38,7 @@ private:
     std::atomic<bool> filterApplied;
     
     std::atomic<bool> playing;
+    std::atomic<int> sampleNumber;
     
     juce::TextButton playButton;
     juce::TextButton stopButton;
